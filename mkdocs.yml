@@ -7,9 +7,9 @@ plugins:
   - mkdocstrings
   - mike
 
-extra:
-  version:
-    provider: mike
+#extra:
+#  version:
+#    provider: mike
 
 nav:
   - Calculation Docs: index.md
