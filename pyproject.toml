@@ -42,5 +42,7 @@ push = false
     'current_version = "{version}"',
     'version = "{version}"',
 ]
-"calculator/__init__.py" = ["__version__"]
+"calculator/__init__.py" = [
+    '__version__ = "{version}"',
+]
 
