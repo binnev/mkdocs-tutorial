@@ -4,7 +4,6 @@ from pathlib import Path
 import calculator
 import glob
 
-LIBRARY_NAME = "mkdocs-ci-cd-sandbox-binnev"
 version = calculator.__version__
 
 
@@ -24,32 +23,39 @@ def check(question: str):
         raise Exception(f"Action required")
 
 
+def shell(cmd: str):
+    subprocess.run(cmd, shell=True)
+
+
 if __name__ == "__main__":
     print(f"Releasing version {version}")
     cleanup()
     check(f"Did you create / update the Version changelog for version {version}?")
 
     print("Building package")
-    subprocess.run("python -m build".split())
-    subprocess.run("twine check dist/*".split())
+    shell("python -m build")
+    shell("twine check dist/*")
+
     print("PyPI test run")
-    subprocess.run("twine upload -r pypitest dist/*".split())
+    shell("twine upload -r pypitest dist/*")
     check(f"Does the testpypi output look OK?")
 
     # print("PyPI deploy")
-    # subprocess.run("twine upload dist/*".split())
+    # shell("twine upload dist/*", she)
 
     print("Building docs")
-    subprocess.run(f"mike deploy {version}".split())
-    subprocess.run(f"mike alias {version} latest --update-aliases".split())
+    shell(f"mike deploy {version}")
+    shell(f"mike alias {version} latest --update-aliases")
     try:
-        process = subprocess.run("mike serve".split())
+        process = shell("mike serve")
     except KeyboardInterrupt:
         pass
     check("Do the docs look OK?")
-    subprocess.run("mike list".split())
+    shell("mike list")
     check("Does the list of docs versions look OK?")
+
     print("Deploying docs")
-    subprocess.run(f"mike set-default latest --push".split())
+    shell(f"mike set-default latest --push")
     cleanup()
+
     print("Done!")
