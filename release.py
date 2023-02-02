@@ -2,22 +2,23 @@ import shutil
 import subprocess
 from pathlib import Path
 import calculator
+import glob
 
 LIBRARY_NAME = "mkdocs-ci-cd-sandbox-binnev"
 version = calculator.__version__
 
 
 def cleanup():
-    for folder in [
-        Path(__file__).parent / f"{LIBRARY_NAME}.egg-info",
-        Path(__file__).parent / "dist",
-        Path(__file__).parent / "site",
-    ]:
-        if folder.exists():
-            shutil.rmtree(folder)
+    paths = ["dist", "site", ".pytest_cache"]
+    paths += glob.glob("*.egg-info")
+    paths += glob.glob("*.pytest_cache")
+    for path in paths:
+        path = Path(__file__).parent / path
+        if path.exists():
+            shutil.rmtree(path)
 
 
-def ask(question: str):
+def check(question: str):
     response = input(question)
     if response.lower() not in ["y", "yes"]:
         raise Exception(f"Action required")
@@ -26,14 +27,14 @@ def ask(question: str):
 if __name__ == "__main__":
     print(f"Releasing version {version}")
     cleanup()
-    ask(f"Did you create / update the Version changelog for version {version}?\n")
+    check(f"Did you create / update the Version changelog for version {version}?\n")
 
     print("Building package")
     subprocess.run("python -m build".split())
     subprocess.run("twine check dist/*".split())
     print("PyPI test run")
     subprocess.run("twine upload -r pypitest dist/*".split())
-    ask(f"Does the testpypi output look OK?\n")
+    check(f"Does the testpypi output look OK?\n")
 
     # print("PyPI deploy")
     # subprocess.run("twine upload dist/*".split())
@@ -45,7 +46,8 @@ if __name__ == "__main__":
         process = subprocess.run("mike serve".split())
     except KeyboardInterrupt:
         pass
-    ask("Do the docs look OK?\n")
-
-    # subprocess.run(f"mike set-default latest --push".split())
+    check("Do the docs look OK?\n")
+    subprocess.run("mike list".split())
+    check("Does the list of docs versions look OK?")
+    subprocess.run(f"mike set-default latest --push".split())
     cleanup()
