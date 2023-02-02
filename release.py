@@ -32,6 +32,10 @@ if __name__ == "__main__":
     cleanup()
     check(f"Did you create / update the Version changelog for version {version}?")
 
+    print("Running tests")
+    shell("pytest")
+
+    raise Exception()
     print("Building package")
     shell("python -m build")
     shell("twine check dist/*")
