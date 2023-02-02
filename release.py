@@ -19,7 +19,7 @@ def cleanup():
 
 
 def check(question: str):
-    response = input(question)
+    response = input(question + "\n")
     if response.lower() not in ["y", "yes"]:
         raise Exception(f"Action required")
 
@@ -27,14 +27,14 @@ def check(question: str):
 if __name__ == "__main__":
     print(f"Releasing version {version}")
     cleanup()
-    check(f"Did you create / update the Version changelog for version {version}?\n")
+    check(f"Did you create / update the Version changelog for version {version}?")
 
     print("Building package")
     subprocess.run("python -m build".split())
     subprocess.run("twine check dist/*".split())
     print("PyPI test run")
     subprocess.run("twine upload -r pypitest dist/*".split())
-    check(f"Does the testpypi output look OK?\n")
+    check(f"Does the testpypi output look OK?")
 
     # print("PyPI deploy")
     # subprocess.run("twine upload dist/*".split())
@@ -46,8 +46,10 @@ if __name__ == "__main__":
         process = subprocess.run("mike serve".split())
     except KeyboardInterrupt:
         pass
-    check("Do the docs look OK?\n")
+    check("Do the docs look OK?")
     subprocess.run("mike list".split())
     check("Does the list of docs versions look OK?")
+    print("Deploying docs")
     subprocess.run(f"mike set-default latest --push".split())
     cleanup()
+    print("Done!")
