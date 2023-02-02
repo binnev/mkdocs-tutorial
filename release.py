@@ -1,9 +1,10 @@
 import shutil
 import subprocess
 from pathlib import Path
+from . import calculator
 
 LIBRARY_NAME = "mkdocs-tutorial"
-VERSION = "5.1"
+version = calculator.__version__
 
 
 def cleanup():
@@ -15,11 +16,12 @@ def cleanup():
         if folder.exists():
             shutil.rmtree(folder)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     cleanup()
     # subprocess.run("python -m build".split())
     # subprocess.run("twine upload dist/*".split())
-    subprocess.run(f"mike deploy {VERSION}".split())
-    subprocess.run(f"mike alias {VERSION} latest --update-aliases".split())
-    subprocess.run(f"mike deploy {VERSION} --push".split())
+    subprocess.run(f"mike deploy {version}".split())
+    subprocess.run(f"mike alias {version} latest --update-aliases".split())
+    subprocess.run(f"mike set-default latest --push".split())
     cleanup()
