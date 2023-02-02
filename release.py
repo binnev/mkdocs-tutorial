@@ -41,7 +41,10 @@ if __name__ == "__main__":
     print("Building docs")
     subprocess.run(f"mike deploy {version}".split())
     subprocess.run(f"mike alias {version} latest --update-aliases".split())
-    process = subprocess.run("mike serve".split())
+    try:
+        process = subprocess.run("mike serve".split())
+    except KeyboardInterrupt:
+        pass
     ask("Do the docs look OK?\n")
 
     # subprocess.run(f"mike set-default latest --push".split())
