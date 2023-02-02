@@ -1,7 +1,14 @@
+# documentation
 mkdocs
 mkdocstrings[python]
 mkdocs-material
 mike
+
+# development
 black
-bumpver
 pytest
+
+# packaging
+bumpver
+build
+twine
